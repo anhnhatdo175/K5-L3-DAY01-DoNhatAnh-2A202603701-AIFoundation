@@ -28,10 +28,10 @@ Bạn sẽ thấy output so sánh phản hồi của `gpt-6.1-terra` và `gpt-6-
 Gọi `call_openai` với các giá trị temperature 0.0, 0.5, 1.0 và 1.5 sử dụng prompt **"Hãy kể cho tôi một sự thật thú vị về Việt Nam."** (nhớ gửi `reasoning_effort="none"`: model GPT-6 chỉ nhận `temperature` khi tắt suy luận)
 
 **Bạn nhận thấy quy luật gì qua bốn phản hồi?** (2–3 câu)
-> *Câu trả lời của bạn*
+> Với `temperature=0.0`, câu trả lời bốn câu hỏi tương đối ổn định và ít thay đổi vì mô hình giảm tính ngẫu nhiên khi chọn từ. Khi tăng lên `0.5` và `1.0`, câu chuyện có thể khác về diễn đạt hoặc ví dụ nhưng vẫn giữ được độ chính xác và đúng chủ đề. Mức `1.5` dễ tạo câu văn đa dạng hơn, nhưng cũng tăng nguy cơ lan man hoặc sử dụng chi tiết ít tin cậy; vì vậy mức này không phù hợp với câu trả lời cần độ chính xác cao.
 
 **Bạn sẽ đặt temperature bao nhiêu cho chatbot hỗ trợ khách hàng, và tại sao?**
-> *Câu trả lời của bạn*
+> Mình sẽ đặt `temperature=0.2` hoặc `0.3`. Cấu hình này vẫn cho câu trả lời tự nhiên, nhưng giữ câu trả lời gần hành chính, nhất quán và ít bịa đặt hơn. Nếu chatbot chỉ trả thông tin và hướng dẫn quy trình, `temperature=0` là lựa chọn thận trọng hơn.
 
 ---
 
@@ -39,16 +39,18 @@ Gọi `call_openai` với các giá trị temperature 0.0, 0.5, 1.0 và 1.5 sử
 Xem xét kịch bản: 10.000 người dùng hoạt động mỗi ngày, mỗi người thực hiện 3 lần gọi API, mỗi lần trung bình ~350 token.
 
 **Ước tính xem `gpt-6.1-terra` đắt hơn `gpt-6-luna` bao nhiêu lần cho workload này** (giá 11/2026: terra $1.00 / $5.00, luna $0.10 / $0.50 mỗi 1M token input / output):
-> *Câu trả lời của bạn*
+> Mỗi ngày có `10.000 × 3 × 350 = 10.500.000` token, tương đương `10,5` triệu token. Cả hai model đều giữ tỷ lệ giá Terra/Luna khoảng 10 lần ở input (`$1/$0,10 = 10×`) và output (`$5/$0,50 = 10×`), nên tổng chi phí Terra khoảng **10 lần** Luna, không phụ thuộc xấp xỉ vào việc phân bố input/output.
+
+> Nếu mỗi lời gọi có 300 token input và 50 token output, chi phí Terra/ngày là `9M × $1/1M + 1,5M × $5/1M = $16,50`; Luna là `9M × $0,10/1M + 1,5M × $0,50/1M = $1,65`. Nghĩa là Terra khoảng `$16,50/ngày` và Luna khoảng `$1,65/ngày`, Terra đắt hơn khoảng 10 lần. Nếu token phân bổ khác thì con số tuyệt đối đổi, nhưng mức chênh lệch vẫn gần 10 lần.
 
 **Mô tả một trường hợp mà chi phí cao hơn của `gpt-6.1-terra` là xứng đáng, và một trường hợp `gpt-6-luna` là lựa chọn tốt hơn:**
-> *Câu trả lời của bạn*
+> Terra xứng đáng khi xử lý tác vụ cần suy luận hoặc độ chính xác cao, chẳng hạn tư vấn về điều khoản, phân tích case khó, hỗ trợ kỹ thuật phức tạp hoặc phản hồi của chatbot điều trị rủi ro cao; sai một tin có thể mất nhiều chi phí hơn phần chênh lệch API. Luna phù hợp hơn cho tác vụ có câu trả lời ngắn, lặp lại và rủi ro thấp, như phân loại tin nhắn spam/ham, tóm tắt ngắn, tìm kiếm FAQ hoặc trả lời câu hỏi có mẫu; có thể thêm router để Luna xử lý trường hợp đơn giản và Terra chỉ xử lý trường hợp cần độ chính xác cao hơn.
 
 ---
 
 ### Bài tập 2.3 — Trải Nghiệm Người Dùng với Streaming
 **Streaming quan trọng nhất trong trường hợp nào, và khi nào thì non-streaming lại phù hợp hơn?** (1 đoạn văn)
-> *Câu trả lời của bạn*
+> Streaming quan trọng nhất với chatbot hội thoại, hỗ trợ khách hàng, viết nội dung dài hoặc tác vụ người dùng cần đọc kết quả ngay; chữ xuất hiện từng phần trong lúc chờ làm `time to first token` ngắn hơn trong cảm nhận, giảm cảm giác treo máy dù độ trễ toàn bộ không thay đổi. Non-streaming phù hợp hơn khi hệ thống cần xử lý máy-máy, batch, phân loại nhãn, JSON có cấu trúc, retry hoặc kiểm tra kết quả trước khi hiển thị, nơi toàn bộ phản hồi phải được parse hoặc xác thực mới có thể dùng.
 
 
 ## Danh Sách Kiểm Tra Nộp Bài
